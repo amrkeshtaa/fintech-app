@@ -1,38 +1,63 @@
+// Light teal design system — trustworthy, modern, accessible
 export const colors = {
-  bg:          '#090e1a',
-  bgCard:      '#111827',
-  bgCardAlt:   '#1a2234',
-  bgElevated:  '#1e293b',
+  // ── Backgrounds ──────────────────────────────────────────
+  bg:         '#F8FAFC',  // slate-50  — page background
+  bgCard:     '#FFFFFF',  // pure white cards
+  bgCardAlt:  '#F1F5F9',  // slate-100 — subtle section tint
+  bgElevated: '#F1F5F9',  // slate-100 — elevated surfaces
 
-  primary:       '#6366f1',
-  primaryLight:  '#818cf8',
-  primaryDark:   '#4f46e5',
-  purple:        '#8b5cf6',
-  purpleLight:   '#a78bfa',
+  // ── Brand — Teal (trust + digital + modern) ───────────────
+  primary:      '#0D9488',  // teal-600
+  primaryLight: '#14B8A6',  // teal-500  — links, secondary text
+  primaryDark:  '#0F766E',  // teal-700  — pressed states
+  primaryBg:    '#F0FDFA',  // teal-50   — subtle tinted bg
 
-  text:        '#f1f5f9',
-  textSub:     '#94a3b8',
-  textMuted:   '#475569',
+  // ── Accent ────────────────────────────────────────────────
+  purple:      '#7C3AED',  // violet-600 — secondary accent
+  purpleLight: '#8B5CF6',  // violet-500
+  purpleBg:    '#F5F3FF',  // violet-50
 
-  success:     '#10b981',
-  successBg:   'rgba(16,185,129,0.12)',
-  warning:     '#f59e0b',
-  warningBg:   'rgba(245,158,11,0.12)',
-  danger:      '#ef4444',
-  dangerBg:    'rgba(239,68,68,0.12)',
-  info:        '#3b82f6',
-  infoBg:      'rgba(59,130,246,0.12)',
+  // ── Text hierarchy ────────────────────────────────────────
+  text:        '#0F172A',  // slate-900  — dark navy, primary text
+  textSub:     '#475569',  // slate-600  — secondary text
+  textMuted:   '#94A3B8',  // slate-400  — placeholder / captions
+  textOnDark:  '#FFFFFF',  // text on colored backgrounds
 
-  border:      'rgba(255,255,255,0.07)',
-  borderLight: 'rgba(255,255,255,0.13)',
+  // ── Status ────────────────────────────────────────────────
+  success:       '#059669',  // emerald-600
+  successBg:     '#ECFDF5',  // emerald-50
+  successBorder: '#A7F3D0',  // emerald-200
 
-  // Card gradient stops
-  gradStart:   '#6366f1',
-  gradMid:     '#8b5cf6',
-  gradEnd:     '#a855f7',
+  warning:       '#D97706',  // amber-600
+  warningBg:     '#FFFBEB',  // amber-50
+  warningBorder: '#FDE68A',  // amber-200
 
-  white:       '#ffffff',
-  black:       '#000000',
+  danger:        '#DC2626',  // red-600
+  dangerBg:      '#FEF2F2',  // red-50
+  dangerBorder:  '#FECACA',  // red-200
+
+  info:          '#2563EB',  // blue-600
+  infoBg:        '#EFF6FF',  // blue-50
+  infoBorder:    '#BFDBFE',  // blue-200
+
+  // ── Borders ───────────────────────────────────────────────
+  border:      '#E2E8F0',  // slate-200
+  borderLight: '#F1F5F9',  // slate-100
+  borderDark:  '#CBD5E1',  // slate-300
+  borderFocus: '#0D9488',  // teal — focused input rings
+
+  // ── Premium gradients (virtual card & balance hero) ───────
+  gradStart: '#0F766E',  // teal-700
+  gradMid:   '#0D9488',  // teal-600
+  gradEnd:   '#0891B2',  // cyan-600
+
+  // ── Shadows (for light-theme elevation) ───────────────────
+  shadow:   '#64748B',   // slate-500
+
+  // ── Utility ───────────────────────────────────────────────
+  white:    '#FFFFFF',
+  black:    '#0F172A',
+  overlay:  'rgba(15,23,42,0.5)',
 };
 
 export type Color = keyof typeof colors;

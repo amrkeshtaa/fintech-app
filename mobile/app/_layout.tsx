@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAppStore } from '@/lib/store';
+import { ToastProvider } from '@/components/ui/Toast';
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
@@ -18,8 +19,11 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+      {/* Dark content (dark icons/text) for light background */}
+      <StatusBar style="dark" />
+      <ToastProvider>
+        <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+      </ToastProvider>
     </GestureHandlerRootView>
   );
 }

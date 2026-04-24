@@ -59,13 +59,14 @@ export const MOCK_PAYMENT_LINKS: PaymentLink[] = [
   { id: 'pl_003', title: 'Tip Jar', description: 'Support our work!', currency: 'USD', slug: 'tip-jar', active: false, visits: 15, payments: 3, collected: 45, createdAt: '2026-02-15' },
 ];
 
+// Category colors updated to teal/blue palette (aligns with design system)
 export const MOCK_CATEGORIES: SpendingCategory[] = [
-  { name: 'Supplies',  amount: 1240, percentage: 32, color: '#6366f1', icon: '📦' },
-  { name: 'Software',  amount: 850,  percentage: 22, color: '#8b5cf6', icon: '💻' },
-  { name: 'Food',      amount: 620,  percentage: 16, color: '#a855f7', icon: '🍽️' },
-  { name: 'Utilities', amount: 480,  percentage: 12, color: '#ec4899', icon: '⚡' },
-  { name: 'Marketing', amount: 350,  percentage: 9,  color: '#f59e0b', icon: '📣' },
-  { name: 'Other',     amount: 320,  percentage: 9,  color: '#64748b', icon: '📊' },
+  { name: 'Supplies',  amount: 1240, percentage: 32, color: '#0D9488', icon: '📦' },  // teal
+  { name: 'Software',  amount: 850,  percentage: 22, color: '#2563EB', icon: '💻' },  // blue
+  { name: 'Food',      amount: 620,  percentage: 16, color: '#7C3AED', icon: '🍽️' },  // violet
+  { name: 'Utilities', amount: 480,  percentage: 12, color: '#DC2626', icon: '⚡' },  // red
+  { name: 'Marketing', amount: 350,  percentage: 9,  color: '#D97706', icon: '📣' },  // amber
+  { name: 'Other',     amount: 320,  percentage: 9,  color: '#64748B', icon: '📊' },  // slate
 ];
 
 export const MOCK_MONTHLY: MonthlyData[] = [
@@ -78,10 +79,10 @@ export const MOCK_MONTHLY: MonthlyData[] = [
 ];
 
 export const CONTACTS = [
-  { id: 'c1', name: 'Sarah Johnson', initials: 'SJ', color: '#ec4899' },
-  { id: 'c2', name: 'Mike Chen',     initials: 'MC', color: '#3b82f6' },
-  { id: 'c3', name: 'Emma Davis',    initials: 'ED', color: '#10b981' },
-  { id: 'c4', name: 'James Wilson',  initials: 'JW', color: '#f59e0b' },
-  { id: 'c5', name: 'Lily Park',     initials: 'LP', color: '#8b5cf6' },
-  { id: 'c6', name: 'Omar Hassan',   initials: 'OH', color: '#6366f1' },
+  { id: 'c1', name: 'Sarah Johnson', initials: 'SJ', color: '#0D9488' },
+  { id: 'c2', name: 'Mike Chen',     initials: 'MC', color: '#2563EB' },
+  { id: 'c3', name: 'Emma Davis',    initials: 'ED', color: '#059669' },
+  { id: 'c4', name: 'James Wilson',  initials: 'JW', color: '#D97706' },
+  { id: 'c5', name: 'Lily Park',     initials: 'LP', color: '#7C3AED' },
+  { id: 'c6', name: 'Omar Hassan',   initials: 'OH', color: '#0891B2' },
 ];

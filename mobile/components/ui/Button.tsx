@@ -6,6 +6,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@/constants/colors';
+import { typography } from '@/constants/typography';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 type Size = 'sm' | 'md' | 'lg';
@@ -22,44 +23,54 @@ interface ButtonProps {
   fullWidth?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  accessibilityLabel?: string;
+  children?: React.ReactNode;
 }
+
+// Minimum tap areas: sm=40, md=48, lg=56 (WCAG 2.5.5 AAA = 44pt)
+const SIZE = {
+  sm: { height: 40, px: 16, fontSize: typography.size.sm, gap: 6, radius: 12 },
+  md: { height: 48, px: 20, fontSize: typography.size.base, gap: 8, radius: 14 },
+  lg: { height: 56, px: 24, fontSize: typography.size.lg, gap: 10, radius: 16 },
+};
 
 export function Button({
   title, onPress, variant = 'primary', size = 'md',
   loading = false, disabled = false,
-  icon, iconRight, fullWidth = false, style, textStyle,
+  icon, iconRight, fullWidth = false,
+  style, textStyle, accessibilityLabel, children,
 }: ButtonProps) {
   const handlePress = () => {
+    if (disabled || loading) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
   };
 
-  const sizeStyles = {
-    sm: { height: 36, px: 14, fontSize: 13, gap: 6 },
-    md: { height: 44, px: 18, fontSize: 14, gap: 8 },
-    lg: { height: 52, px: 24, fontSize: 16, gap: 10 },
-  }[size];
-
+  const s = SIZE[size];
   const isDisabled = disabled || loading;
 
   const inner = (
-    <View style={[styles.inner, { gap: sizeStyles.gap }]}>
+    <View style={[styles.inner, { gap: s.gap }]}>
       {loading
         ? <ActivityIndicator size="small" color={variant === 'primary' ? colors.white : colors.primary} />
         : icon}
-      <Text style={[
-        styles.text,
-        { fontSize: sizeStyles.fontSize },
-        variant === 'secondary' && { color: colors.text },
-        variant === 'ghost' && { color: colors.textSub },
-        variant === 'danger' && { color: colors.danger },
-        variant === 'outline' && { color: colors.primary },
-        isDisabled && { opacity: 0.5 },
-        textStyle,
-      ]}>
+      <Text
+        style={[
+          styles.text,
+          { fontSize: s.fontSize },
+          variant === 'secondary' && { color: colors.text },
+          variant === 'ghost'     && { color: colors.primary },
+          variant === 'danger'    && { color: colors.danger },
+          variant === 'outline'   && { color: colors.primary },
+          isDisabled && styles.disabledText,
+          textStyle,
+        ]}
+        accessibilityRole="text"
+      >
         {title}
       </Text>
       {iconRight}
+      {children}
     </View>
   );
 
@@ -68,17 +79,20 @@ export function Button({
       <TouchableOpacity
         onPress={handlePress}
         disabled={isDisabled}
-        activeOpacity={0.8}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel ?? title}
+        accessibilityState={{ disabled: isDisabled, busy: loading }}
         style={[fullWidth && styles.fullWidth, style]}
       >
         <LinearGradient
-          colors={['#6366f1', '#8b5cf6']}
+          colors={[colors.primary, colors.primaryDark]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[
             styles.base,
-            { height: sizeStyles.height, paddingHorizontal: sizeStyles.px },
-            isDisabled && { opacity: 0.5 },
+            { height: s.height, paddingHorizontal: s.px, borderRadius: s.radius },
+            isDisabled && styles.disabled,
           ]}
         >
           {inner}
@@ -87,23 +101,40 @@ export function Button({
     );
   }
 
-  const variantStyle: ViewStyle = {
-    secondary: { backgroundColor: colors.bgElevated, borderWidth: 1, borderColor: colors.border },
-    ghost:     { backgroundColor: 'transparent' },
-    danger:    { backgroundColor: colors.dangerBg, borderWidth: 1, borderColor: `${colors.danger}33` },
-    outline:   { backgroundColor: 'transparent', borderWidth: 1, borderColor: `${colors.primary}66` },
-  }[variant as Exclude<Variant, 'primary'>] ?? {};
+  const variantStyle: ViewStyle = ({
+    secondary: {
+      backgroundColor: colors.bgCard,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+    },
+    danger: {
+      backgroundColor: colors.dangerBg,
+      borderWidth: 1.5,
+      borderColor: colors.dangerBorder,
+    },
+    outline: {
+      backgroundColor: colors.primaryBg,
+      borderWidth: 1.5,
+      borderColor: colors.primary,
+    },
+  } as Record<Exclude<Variant, 'primary'>, ViewStyle>)[variant as Exclude<Variant, 'primary'>] ?? {};
 
   return (
     <TouchableOpacity
       onPress={handlePress}
       disabled={isDisabled}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
       style={[
         styles.base,
         variantStyle,
-        { height: sizeStyles.height, paddingHorizontal: sizeStyles.px },
-        isDisabled && { opacity: 0.5 },
+        { height: s.height, paddingHorizontal: s.px, borderRadius: s.radius },
+        isDisabled && styles.disabled,
         fullWidth && styles.fullWidth,
         style,
       ]}
@@ -115,7 +146,6 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -127,7 +157,10 @@ const styles = StyleSheet.create({
   },
   text: {
     color: colors.white,
-    fontWeight: '600',
+    fontWeight: typography.weight.semibold,
+    letterSpacing: 0.1,
   },
+  disabled: { opacity: 0.45 },
+  disabledText: {},
   fullWidth: { width: '100%' },
 });

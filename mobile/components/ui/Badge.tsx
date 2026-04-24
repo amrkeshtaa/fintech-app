@@ -1,32 +1,93 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@/constants/colors';
+import { typography } from '@/constants/typography';
 
-type Variant = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+// All required status types per design system §7.3
+export type BadgeVariant =
+  | 'success'      // Paid, Settled
+  | 'warning'      // Pending, Under review
+  | 'danger'       // Failed
+  | 'info'         // Refunded
+  | 'neutral'      // Cancelled, Draft
+  | 'primary';     // Active, custom
 
-const cfg: Record<Variant, { bg: string; text: string }> = {
-  success: { bg: colors.successBg, text: colors.success },
-  warning: { bg: colors.warningBg, text: colors.warning },
-  danger:  { bg: colors.dangerBg,  text: colors.danger },
-  info:    { bg: colors.infoBg,    text: colors.info },
-  neutral: { bg: 'rgba(100,116,139,0.15)', text: colors.textSub },
+// Non-color status indicators (accessibility: no color-only status)
+const STATUS_ICON: Record<string, string> = {
+  // Semantic payment statuses
+  Paid:          '✓',
+  Settled:       '✓✓',
+  Pending:       '⏱',
+  'Under review': '◎',
+  Failed:        '✕',
+  Refunded:      '↺',
+  Cancelled:     '—',
+  // Generic
+  Active:        '●',
+  Frozen:        '❄',
+  Draft:         '○',
+  Sent:          '→',
+  Overdue:       '!',
 };
 
-export function Badge({ text, variant = 'neutral' }: { text: string; variant?: Variant }) {
-  const c = cfg[variant];
+interface BadgeConfig {
+  bg: string;
+  text: string;
+  border: string;
+}
+
+const VARIANT_CFG: Record<BadgeVariant, BadgeConfig> = {
+  success: { bg: colors.successBg, text: colors.success, border: colors.successBorder },
+  warning: { bg: colors.warningBg, text: colors.warning, border: colors.warningBorder },
+  danger:  { bg: colors.dangerBg,  text: colors.danger,  border: colors.dangerBorder  },
+  info:    { bg: colors.infoBg,    text: colors.info,    border: colors.infoBorder    },
+  neutral: { bg: colors.bgCardAlt, text: colors.textSub, border: colors.border        },
+  primary: { bg: colors.primaryBg, text: colors.primary, border: `${colors.primary}40` },
+};
+
+interface BadgeProps {
+  text: string;
+  variant?: BadgeVariant;
+  showIcon?: boolean;
+}
+
+export function Badge({ text, variant = 'neutral', showIcon = true }: BadgeProps) {
+  const cfg = VARIANT_CFG[variant];
+  const icon = STATUS_ICON[text];
+
   return (
-    <View style={[styles.badge, { backgroundColor: c.bg }]}>
-      <Text style={[styles.text, { color: c.text }]}>{text}</Text>
+    <View
+      style={[styles.badge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}
+      accessibilityRole="text"
+      accessibilityLabel={text}
+    >
+      {showIcon && icon && (
+        <Text style={[styles.icon, { color: cfg.text }]}>{icon}</Text>
+      )}
+      <Text style={[styles.text, { color: cfg.text }]}>{text}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
     borderRadius: 99,
+    borderWidth: 1,
     paddingHorizontal: 8,
     paddingVertical: 3,
     alignSelf: 'flex-start',
   },
-  text: { fontSize: 11, fontWeight: '600' },
+  icon: {
+    fontSize: 9,
+    fontWeight: typography.weight.bold,
+    lineHeight: 13,
+  },
+  text: {
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.semibold,
+    letterSpacing: 0.2,
+  },
 });

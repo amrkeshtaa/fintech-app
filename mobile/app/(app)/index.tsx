@@ -48,7 +48,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Balance card */}
-      <LinearGradient colors={['#6366f1', '#8b5cf6', '#a855f7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balanceCard}>
+      <LinearGradient colors={[colors.gradStart, colors.gradMid, colors.gradEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balanceCard}>
         <Text style={styles.balLabel}>{isBiz ? 'Business Balance' : 'Your Balance'}</Text>
         <Text style={styles.balAmount}>{formatCurrency(user.balance)}</Text>
         <Text style={styles.balSub}>{user.currency} · Updated just now</Text>

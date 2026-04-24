@@ -38,7 +38,7 @@ export default function WalletScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {/* Balance */}
-      <LinearGradient colors={['#6366f1', '#8b5cf6', '#a855f7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+      <LinearGradient colors={[colors.gradStart, colors.gradMid, colors.gradEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
         <Text style={styles.heroLabel}>Available Balance</Text>
         <Text style={styles.heroAmount}>{formatCurrency(user.balance)}</Text>
         <Text style={styles.heroSub}>{user.currency} · Real-time</Text>

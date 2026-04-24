@@ -4,49 +4,89 @@ import type { Transaction } from '@/lib/types';
 import { formatCurrency, formatRelativeDate } from '@/lib/utils';
 import { Badge } from './ui/Badge';
 import { colors } from '@/constants/colors';
+import { typography } from '@/constants/typography';
 
-const typeConfig = {
+const TYPE_CFG = {
   receive: { icon: '↓', color: colors.success, bg: colors.successBg, prefix: '+' },
   send:    { icon: '↑', color: colors.danger,  bg: colors.dangerBg,  prefix: '-' },
   payment: { icon: '↑', color: colors.danger,  bg: colors.dangerBg,  prefix: '-' },
   refund:  { icon: '↺', color: colors.info,    bg: colors.infoBg,    prefix: '+' },
-  topup:   { icon: '+', color: colors.success, bg: colors.successBg, prefix: '+' },
+  topup:   { icon: '↓', color: colors.success, bg: colors.successBg, prefix: '+' },
 };
 
-const statusVariant = {
-  completed: 'success' as const,
-  pending:   'warning' as const,
-  failed:    'danger' as const,
+// Maps tx status to badge display label + variant
+const STATUS_BADGE: Record<Transaction['status'], { label: string; variant: 'success' | 'warning' | 'danger' }> = {
+  completed: { label: 'Paid',    variant: 'success' },
+  pending:   { label: 'Pending', variant: 'warning' },
+  failed:    { label: 'Failed',  variant: 'danger'  },
 };
 
 export function TransactionItem({ item }: { item: Transaction }) {
-  const cfg = typeConfig[item.type];
+  const cfg    = TYPE_CFG[item.type];
+  const badge  = STATUS_BADGE[item.status];
+
   return (
-    <View style={styles.row}>
+    <View
+      style={styles.row}
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={`${item.description}, ${cfg.prefix}${formatCurrency(item.amount)}, ${badge.label}`}
+    >
+      {/* Icon */}
       <View style={[styles.icon, { backgroundColor: cfg.bg }]}>
-        <Text style={[styles.iconText, { color: cfg.color }]}>{cfg.icon}</Text>
+        <Text style={[styles.iconText, { color: cfg.color }]} aria-hidden>{cfg.icon}</Text>
       </View>
+
+      {/* Description */}
       <View style={styles.middle}>
         <Text style={styles.desc} numberOfLines={1}>{item.description}</Text>
-        <Text style={styles.sub}>{item.counterparty} · {formatRelativeDate(item.date)}</Text>
+        <Text style={styles.sub} numberOfLines={1}>{item.counterparty} · {formatRelativeDate(item.date)}</Text>
       </View>
+
+      {/* Amount + status */}
       <View style={styles.right}>
         <Text style={[styles.amount, { color: cfg.color }]}>
           {cfg.prefix}{formatCurrency(item.amount)}
         </Text>
-        <Badge text={item.status} variant={statusVariant[item.status]} />
+        <Badge text={badge.label} variant={badge.variant} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, gap: 12 },
-  icon: { width: 42, height: 42, borderRadius: 21, justifyContent: 'center', alignItems: 'center' },
-  iconText: { fontSize: 16, fontWeight: '700' },
-  middle: { flex: 1 },
-  desc: { color: colors.text, fontSize: 14, fontWeight: '500' },
-  sub: { color: colors.textMuted, fontSize: 12, marginTop: 2 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+  },
+  icon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: {
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.bold,
+  },
+  middle: { flex: 1, gap: 2 },
+  desc: {
+    color: colors.text,
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.semibold,
+  },
+  sub: {
+    color: colors.textMuted,
+    fontSize: typography.size.sm,
+  },
   right: { alignItems: 'flex-end', gap: 4 },
-  amount: { fontSize: 14, fontWeight: '700' },
+  amount: {
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.bold,
+  },
 });
