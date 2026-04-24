@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AppProvider } from '@/lib/store';
+import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
   title: 'PayNow — Digital Payments for Everyone',
@@ -13,7 +14,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body className="antialiased">
-        <AppProvider>{children}</AppProvider>
+        {/* SessionProvider must wrap AppProvider so AppProvider can call useSession() */}
+        <Providers>
+          <AppProvider>{children}</AppProvider>
+        </Providers>
       </body>
     </html>
   );

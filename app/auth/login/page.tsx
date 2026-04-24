@@ -3,26 +3,56 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Zap, Eye, EyeOff, Shield } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import { Zap, Eye, EyeOff, Shield, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useApp } from '@/lib/store';
+import { loginSchema } from '@/lib/validation';
+
+type FieldErrors = Partial<Record<'email' | 'password', string>>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useApp();
-  const [email, setEmail] = useState('alex@coffeehouse.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState<'business' | 'customer'>('business');
+  const [globalError, setGlobalError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  const validate = (): boolean => {
+    const result = loginSchema.safeParse({ email, password });
+    if (result.success) { setFieldErrors({}); return true; }
+    const errs: FieldErrors = {};
+    for (const issue of result.error.issues) {
+      const key = issue.path[0] as keyof FieldErrors;
+      if (!errs[key]) errs[key] = issue.message;
+    }
+    setFieldErrors(errs);
+    return false;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setGlobalError('');
+    if (!validate()) return;
+
     setLoading(true);
-    await new Promise(r => setTimeout(r, 800));
-    login(role);
+    const result = await signIn('credentials', {
+      email: email.trim().toLowerCase(),
+      password,
+      redirect: false,
+    });
+    setLoading(false);
+
+    if (!result?.ok) {
+      // Deliberate vague message — don't tell attacker which field was wrong
+      setGlobalError('Incorrect email or password. Please try again.');
+      return;
+    }
+
     router.push('/dashboard');
+    router.refresh();
   };
 
   return (
@@ -44,44 +74,34 @@ export default function LoginPage() {
         </div>
 
         <div className="glass rounded-2xl p-6 border border-white/[0.08]">
-          {/* Demo role picker */}
-          <div className="mb-5">
-            <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider">Demo Mode — choose role</p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => { setRole('business'); setEmail('alex@coffeehouse.com'); }}
-                className={`py-2 px-3 rounded-xl text-sm font-medium transition-all border ${
-                  role === 'business'
-                    ? 'bg-brand-500/20 border-brand-500/50 text-brand-300'
-                    : 'border-white/[0.08] text-slate-400 hover:border-white/20'
-                }`}
-              >
-                Business
-              </button>
-              <button
-                type="button"
-                onClick={() => { setRole('customer'); setEmail('jordan@email.com'); }}
-                className={`py-2 px-3 rounded-xl text-sm font-medium transition-all border ${
-                  role === 'customer'
-                    ? 'bg-brand-500/20 border-brand-500/50 text-brand-300'
-                    : 'border-white/[0.08] text-slate-400 hover:border-white/20'
-                }`}
-              >
-                Customer
-              </button>
-            </div>
+          {/* Demo credentials hint */}
+          <div className="mb-5 p-3 rounded-xl bg-brand-500/5 border border-brand-500/20 text-xs text-slate-400 space-y-1">
+            <p className="text-brand-300 font-semibold mb-1">Demo accounts</p>
+            <p>Business: <span className="text-slate-300 font-mono">alex@coffeehouse.com</span></p>
+            <p>Customer: <span className="text-slate-300 font-mono">jordan@email.com</span></p>
+            <p>Password: <span className="text-slate-300 font-mono">Demo@1234!</span></p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          {/* Global error */}
+          {globalError && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm mb-4">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {globalError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4" noValidate>
             <Input
               label="Email"
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={e => { setEmail(e.target.value); setFieldErrors(p => ({ ...p, email: undefined })); }}
               placeholder="you@example.com"
+              autoComplete="email"
+              error={fieldErrors.email}
               required
             />
+
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-slate-300">Password</label>
@@ -93,19 +113,28 @@ export default function LoginPage() {
                 <input
                   type={showPass ? 'text' : 'password'}
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={e => { setPassword(e.target.value); setFieldErrors(p => ({ ...p, password: undefined })); }}
                   placeholder="••••••••"
+                  autoComplete="current-password"
                   required
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 pr-10 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/60 focus:border-brand-500/60 transition-all"
+                  className={`w-full rounded-xl border bg-white/[0.04] px-3 py-2.5 pr-10 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                    fieldErrors.password
+                      ? 'border-red-500/50 focus:ring-red-500/40'
+                      : 'border-white/[0.08] focus:ring-brand-500/60 focus:border-brand-500/60'
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  aria-label={showPass ? 'Hide password' : 'Show password'}
                 >
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className="text-xs text-red-400">{fieldErrors.password}</p>
+              )}
             </div>
 
             <Button type="submit" className="w-full" size="lg" loading={loading}>
@@ -115,7 +144,7 @@ export default function LoginPage() {
 
           <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
             <Shield className="w-3 h-3 text-emerald-400" />
-            Secured with 256-bit encryption
+            Secured with bcrypt · HttpOnly JWT · rate-limited
           </div>
         </div>
 
