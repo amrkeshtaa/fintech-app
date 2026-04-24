@@ -39,7 +39,7 @@ export function Input({
         {prefix && <View style={styles.adornLeft}>{prefix}</View>}
 
         <TextInput
-          style={[styles.input, prefix && styles.inputWithPrefix, suffix && styles.inputWithSuffix]}
+          style={[styles.input, prefix ? styles.inputWithPrefix : null, suffix ? styles.inputWithSuffix : null]}
           placeholderTextColor={colors.textMuted}
           selectionColor={colors.primary}
           onFocus={() => setFocused(true)}

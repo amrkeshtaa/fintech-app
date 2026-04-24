@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Modal, Share, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, Plus, X, Copy, Share2, CheckCircle, ToggleLeft, ToggleRight, Link } from 'lucide-react-native';
+import { ArrowLeft, Plus, X, Copy, Share2, CheckCircle, ToggleLeft, ToggleRight, Link, QrCode } from 'lucide-react-native';
 import QRCode from 'react-native-qrcode-svg';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';

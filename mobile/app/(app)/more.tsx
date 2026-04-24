@@ -3,13 +3,14 @@ import { router } from 'expo-router';
 import {
   FileText, Link, Smartphone, User, Shield, Bell,
   HelpCircle, LogOut, ChevronRight, Send, QrCode,
+  type LucideIcon,
 } from 'lucide-react-native';
 import { useAppStore } from '@/lib/store';
 import { Card } from '@/components/ui/Card';
 import { colors } from '@/constants/colors';
 
 interface MenuItem {
-  icon: React.ComponentType<{ size: number; color: string }>;
+  icon: LucideIcon;
   label: string;
   sub?: string;
   href?: string;
@@ -25,9 +26,9 @@ export default function MoreScreen() {
   const isBiz = user.role === 'business';
 
   const BUSINESS: MenuItem[] = [
-    { icon: FileText,    label: 'Invoices',       sub: 'Create & track invoices',    href: '/(app)/invoices',       color: '#10b981' },
+    { icon: FileText,    label: 'Invoices',       sub: 'Create & track invoices',    href: '/(app)/invoices',       color: colors.success },
     { icon: Link,        label: 'Payment Links',  sub: 'Shareable payment pages',    href: '/(app)/payment-links',  color: colors.purple },
-    { icon: Smartphone,  label: 'Point of Sale',  sub: 'Accept in-person payments',  href: '/(app)/pos',            color: '#f59e0b' },
+    { icon: Smartphone,  label: 'Point of Sale',  sub: 'Accept in-person payments',  href: '/(app)/pos',            color: colors.warning },
   ];
 
   const MONEY: MenuItem[] = [

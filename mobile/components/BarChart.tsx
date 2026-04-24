@@ -4,7 +4,7 @@ import { colors } from '@/constants/colors';
 import { typography } from '@/constants/typography';
 
 interface BarData {
-  label: string;
+  month: string;
   income: number;
   expenses: number;
 }
@@ -33,17 +33,17 @@ export function BarChart({ data }: { data: BarData[] }) {
                 style={[styles.bar, styles.barIncome, {
                   height: Math.max(4, (d.income / maxVal) * CHART_HEIGHT),
                 }]}
-                accessibilityLabel={`${d.label} income ${d.income}`}
+                accessibilityLabel={`${d.month} income ${d.income}`}
               />
               {/* Expense bar */}
               <View
                 style={[styles.bar, styles.barExpense, {
                   height: Math.max(4, (d.expenses / maxVal) * CHART_HEIGHT),
                 }]}
-                accessibilityLabel={`${d.label} expenses ${d.expenses}`}
+                accessibilityLabel={`${d.month} expenses ${d.expenses}`}
               />
             </View>
-            <Text style={styles.label}>{d.label}</Text>
+            <Text style={styles.label}>{d.month}</Text>
           </View>
         ))}
       </View>
