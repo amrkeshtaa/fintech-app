@@ -4,11 +4,11 @@
     "slug": "paynow",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "scheme": "paynow",
-    "backgroundColor": "#090e1a",
+    "backgroundColor": "#F8FAFC",
     "splash": {
-      "backgroundColor": "#090e1a",
+      "backgroundColor": "#0D9488",
       "resizeMode": "contain"
     },
     "ios": {
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#090e1a"
+        "backgroundColor": "#0D9488"
       },
       "package": "com.paynow.app"
     },
@@ -27,7 +27,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-local-authentication"
     ],
     "experiments": {
       "typedRoutes": true
