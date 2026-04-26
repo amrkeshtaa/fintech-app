@@ -6,7 +6,6 @@ import { registerLimiter } from '@/lib/rate-limit';
 import { generateId } from '@/lib/utils';
 
 export async function POST(req: NextRequest) {
-  // Rate limit by IP
   const ip =
     req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
     req.headers.get('x-real-ip') ??
@@ -34,7 +33,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  // Validate with Zod
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
@@ -47,24 +45,22 @@ export async function POST(req: NextRequest) {
 
   const { name, email, password, phone, role, businessName } = parsed.data;
 
-  // Check duplicate email — return same message as "not found" to prevent enumeration
-  if (emailExists(email)) {
+  if (await emailExists(email)) {
     return NextResponse.json(
       { error: 'An account with this email already exists.' },
       { status: 409 },
     );
   }
 
-  // Hash password — cost factor 12 for production-grade security
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  createUser({
+  await createUser({
     id: `usr_${generateId()}`,
     name: name.trim(),
     email: email.toLowerCase().trim(),
     hashedPassword,
     role,
-    businessName: businessName?.trim(),
+    businessName: businessName?.trim() ?? null,
     phone: phone.trim(),
     balance: 0,
     currency: 'USD',

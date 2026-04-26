@@ -23,3 +23,12 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# SQLite database files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# TypeScript build info
+tsconfig.tsbuildinfo

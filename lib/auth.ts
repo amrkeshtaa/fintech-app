@@ -13,11 +13,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        // Validate shape with Zod before touching the DB
         const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const user = findUserByEmail(parsed.data.email);
+        const user = await findUserByEmail(parsed.data.email);
         if (!user) {
           // Constant-time dummy compare to prevent user enumeration timing attacks
           await bcrypt.compare(parsed.data.password, '$2a$10$dummyhashfortiminganonymisation');
@@ -31,8 +30,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role,
-          businessName: user.businessName,
+          role: user.role as 'business' | 'customer',
+          businessName: user.businessName ?? undefined,
           balance: user.balance,
           currency: user.currency,
         };
@@ -42,8 +41,8 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60,         // 24 hours
-    updateAge: 60 * 60,            // refresh every hour
+    maxAge: 24 * 60 * 60,
+    updateAge: 60 * 60,
   },
 
   jwt: {
@@ -89,6 +88,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  // Disable debug in production
   debug: process.env.NODE_ENV === 'development',
 };

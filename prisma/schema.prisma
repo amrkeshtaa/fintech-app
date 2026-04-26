@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id
+  name           String
+  email          String    @unique
+  hashedPassword String
+  phone          String
+  role           String    // "business" | "customer"
+  businessName   String?
+  balance        Float     @default(0)
+  currency       String    @default("USD")
+  verified       Boolean   @default(false)
+  joinedAt       String
+
+  transactions   Transaction[]
+  cards          VirtualCard[]
+  invoices       Invoice[]
+  paymentLinks   PaymentLink[]
+}
+
+model Transaction {
+  id                 String  @id
+  userId             String
+  type               String  // "send" | "receive" | "payment" | "refund" | "topup"
+  amount             Float
+  currency           String  @default("USD")
+  description        String
+  counterparty       String
+  counterpartyAvatar String?
+  status             String  // "completed" | "pending" | "failed"
+  category           String
+  date               String
+  reference          String
+
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VirtualCard {
+  id               String  @id
+  userId           String
+  last4            String
+  expiryMonth      String
+  expiryYear       String
+  cardholderName   String
+  status           String  @default("active") // "active" | "frozen" | "cancelled"
+  spendingLimit    Float
+  spent            Float   @default(0)
+  network          String  // "visa" | "mastercard"
+  addedToApplePay  Boolean @default(false)
+  addedToGooglePay Boolean @default(false)
+
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id          String        @id
+  userId      String
+  number      String
+  clientName  String
+  clientEmail String
+  subtotal    Float
+  tax         Float
+  total       Float
+  status      String        // "draft" | "sent" | "paid" | "overdue"
+  dueDate     String
+  createdAt   String
+  paidAt      String?
+  currency    String        @default("USD")
+  notes       String?
+
+  items       InvoiceItem[]
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model InvoiceItem {
+  id          Int     @id @default(autoincrement())
+  invoiceId   String
+  description String
+  quantity    Float
+  unitPrice   Float
+  total       Float
+
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model PaymentLink {
+  id          String  @id
+  userId      String
+  title       String
+  description String?
+  amount      Float?
+  currency    String  @default("USD")
+  slug        String  @unique
+  active      Boolean @default(true)
+  visits      Int     @default(0)
+  payments    Int     @default(0)
+  collected   Float   @default(0)
+  createdAt   String
+
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
