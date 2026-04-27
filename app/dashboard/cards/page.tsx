@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import {
-  Snowflake, Play, Eye, EyeOff, Copy, Apple, Chrome,
+  Snowflake, Play, Eye, EyeOff, Copy, Apple, Globe,
   CheckCircle, Shield, Plus, CreditCard,
 } from 'lucide-react';
 import { useApp } from '@/lib/store';
@@ -201,7 +201,7 @@ export default function CardsPage() {
               <div className="flex items-center justify-between p-3 rounded-xl bg-dark-900/60 border border-white/[0.06]">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                    <Chrome className="w-5 h-5 text-blue-400" />
+                    <Globe className="w-5 h-5 text-blue-400" />
                   </div>
                   <div>
                     <p className="text-slate-200 text-sm font-medium">Google Pay</p>

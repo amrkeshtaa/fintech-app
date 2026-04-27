@@ -179,7 +179,7 @@ export default function AnalyticsPage() {
                       <Cell key={i} fill={cat.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
